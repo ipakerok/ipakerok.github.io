@@ -1,1 +1,215 @@
-ipakerok.github.io
+
+<title>SNAKE</title>
+
+<style>
+#area{
+	border-collapse:collapse;
+}
+#area tr td{
+	height:12px;
+	width:12px;
+	border:none;
+}
+#wadah{
+	position:fixed;
+	background-color:#e2a12a;
+	box-shadow:0px 0px 20px #000000;
+	font-family: monospace;
+}
+#menu{
+	position:fixed;
+	background-color:#62e7df;
+}
+</style>
+<div id='wadah' style="width:600px;height:597px;left:0px;">
+<center>
+<h1 style="font-family:monospace;">Pixel Snake</h1>
+
+<div id='menu' style="width:600px;height:500px;display:inherit;">
+<div id='info' style="display:inherit;">
+	<span id='papanskor' style="font-size:50px;font-family:monospace;display:none;"></span>
+	<button onclick='mulai()' style="top:200px;padding:10px;font-size:30px;margin-top:50px;font-family:monospace;">Start</button><br>
+	<!--button onclick='document.getElementById("info").style.display="none";document.getElementById("atur").style.display="inherit";' style="top:200px;padding:10px;font-size:30px;margin-top:50px;font-family:monospace;">Tampilan</button><br>
+	<button onclick='' style="top:200px;padding:10px;font-size:30px;margin-top:50px;font-family:monospace;">Kredit</button><br-->
+</div>
+<div id='atur' style="display:none;">
+	<table border=0>
+		<tr>
+			<td>Ular</td>
+			<td><input type='color' value='' onblur='alert(this.value)' ></td>
+		</tr>
+	</table>
+	<button onclick='document.getElementById("atur").style.display="none";document.getElementById("info").style.display="inherit";' style="top:200px;padding:10px;font-size:30px;margin-top:50px;font-family:monospace;">Back</button><br>
+</div>
+</div>
+
+Score :<span id='skor'>0</span>
+<table id='area'></table><br>
+</center>
+</div>
+
+
+
+<script>
+//(c) 2015
+var v=90;
+var arah="kanan";
+var arah2, xx, yy;
+var gerak=[];
+var ingerak=0;
+var panjang=40;
+var lebar=30;
+var area=[];
+var ular=[];
+var wlatar="aaffaa";
+var wpelet="ff0000";
+var wular="ff7700";
+var wndasular="aa2200";
+
+function setawal(){
+	ular=new Array(10,9,10,8,10,7);
+	ingerak=0;
+	gerak=[];
+	arah="kanan";
+	for(a=0;a<panjang;a++){
+		area[a]=[];
+		for(b=0;b<lebar;b++){
+			area[a][b]=wlatar;
+		}
+	}
+}
+
+function buattabel(){
+	a=0;
+	while(a<ular.length){
+		area[ular[a]][ular[a+1]]=wular;
+		a+=2;
+	}
+	if(ular.length)area[ular[0]][ular[1]]=wndasular;
+//membuat tabel/////////////////////
+	teks="<table border=1 id='area'>";
+	for(a=0;a<area.length;a++){
+		teks+="<tr>";
+		for(b=0;b<area[a].length;b++){
+			teks+="<td bgcolor='#"+area[a][b]+"'></td>";
+		}
+		teks+="</td>";
+	}
+	teks+="</table>";
+	document.getElementById('area').outerHTML=teks;
+}
+
+function pelet(){
+	xx=Math.floor(Math.random()*lebar);
+	yy=Math.floor(Math.random()*panjang);
+	if(area[yy][xx]==wlatar)
+		area[yy][xx]=wpelet;
+	else pelet();
+//	v-=1;
+}
+
+function maju(){
+	document.getElementById('skor').innerHTML=ular.length/2-3;
+	aa=ular[ular.length-2];
+	bb=ular[ular.length-1];
+	area[ular[ular.length-2]][ular[ular.length-1]]=wlatar;
+	a=ular.length-2;
+	while(a>0){
+		ular[a]=ular[a-2];
+		ular[a+1]=ular[a-1];
+		a-=2;
+	}
+	if(gerak[ingerak]){
+		arah=gerak[ingerak];
+		ingerak++;
+	}
+	if(arah=="kanan" && ular[1]<(area[0].length-1) && area[ular[0]][ular[1]+1]!=='wular'){
+		ular[1]++;
+		if(area[yy][xx]==wular){
+			ular[ular.length]=aa;
+			ular[ular.length]=bb;
+			pelet();
+		}
+		buattabel();
+		window.setTimeout("maju()",v);
+	}
+	else if(arah=="atas" && ular[0]>0 && area[ular[0]-1][ular[1]]!==wular){
+		ular[0]--;
+		if(area[yy][xx]==wular){
+			ular[ular.length]=aa;
+			ular[ular.length]=bb;
+			pelet();
+		}
+		buattabel();
+		window.setTimeout("maju()",v);
+	}
+	else if(arah=="kiri" && ular[1]>0 && area[ular[0]][ular[1]-1]!==wular){
+		ular[1]--;
+		if(area[yy][xx]==wular){
+			ular[ular.length]=aa;
+			ular[ular.length]=bb;
+			pelet();
+		}
+		buattabel();
+		window.setTimeout("maju()",v);
+	}
+	else if(arah=="bawah" && ular[0]<(area.length-1) && area[ular[0]+1][ular[1]]!==wular){
+		ular[0]++;
+		if(area[yy][xx]==wular){
+			ular[ular.length]=aa;
+			ular[ular.length]=bb;
+			pelet();
+		}
+		buattabel();
+		window.setTimeout("maju()",v);
+	} else {
+		window.setTimeout(
+			function(){
+				document.getElementById('papanskor').innerHTML="Score :"+(ular.length/2-3);
+				document.getElementById('papanskor').style.display="inherit";
+				document.getElementById('menu').style.display="inherit";
+			}
+		,1000);
+	//	alert(gerak);
+	//	mulai();
+	}
+}
+
+function mulai(){
+	document.getElementById('menu').style.display="none";
+	window.setTimeout('maju();',500);
+	setawal();
+	pelet();
+	buattabel();
+//	maju();
+}
+function termuat(){
+	for(a=0;a<panjang;a++){
+		area[a]=[];
+		for(b=0;b<lebar;b++){
+			area[a][b]=wlatar;
+		}
+	}
+	buattabel();
+	setposisi();
+}
+function navi(e){
+	arah2=arah;
+	if((e.which==115 || e.keyCode==115) && arah2!="atas" && arah2!="bawah")gerak[gerak.length]="bawah";
+	else if((e.which==97 || e.keyCode==97) && arah2!="kiri" && arah2!="kanan")gerak[gerak.length]="kiri";
+	else if((e.which==100 || e.keyCode==100) && arah2!="kanan" && arah2!="kiri")gerak[gerak.length]="kanan";
+	else if((e.which==119 || e.keyCode==119) && arah2!="atas" && arah2!="bawah")gerak[gerak.length]="atas";
+//	alert(e.keyCode);
+}
+
+function setposisi(){
+	lebar1=window.innerWidth;
+	ll=document.getElementById('wadah').style.width.slice(0,-2);
+	posisi=(lebar1-ll)/2;
+	document.getElementById('wadah').style.left=posisi+"px";
+}
+
+window.onload=termuat;
+window.onresize=setposisi;
+window.onkeypress=navi;
+</script>
